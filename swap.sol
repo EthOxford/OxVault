@@ -4,25 +4,25 @@ pragma solidity ^0.8.20;
 
 import "@chainlink/contracts/src/v0.8/interfaces/AggregatorV3Interface.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
-import "./lastvault.sol";
+import "./vault.sol";
 import "@openzeppelin/contracts/utils/math/SafeMath.sol";
 import "@uniswap/v3-periphery/contracts/interfaces/ISwapRouter.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
-    contract utils {
-
+    contract SwapContract 
+    {
         uint256 public Pool_Value;
         mapping (address => uint256) public tokenBalances;
         AggregatorV3Interface[] public priceFeeds;//chainlink
-        address[2] public tokenAddresses;
-        uint256[2] public Proportion;
-        uint256[2] public assetPrices;
+        address[3] public tokenAddresses;
+        uint256[3] public Proportion;
+        uint256[3] public assetPrices;
         using SafeMath for uint256;
         uint256 public i;
         uint256 public tokenBalance;
         uint256 public tokenPrice;
         address public vaultAddress; // Vault address (modifiable)
-        C10Vault public vault;
+        VaultContract public vaultcontract;
 
         address public constant USDC = 0x3c499c542cEF5E3811e1192ce70d8cC03d5c3359;
         IERC20 public usdcToken = IERC20(USDC);
@@ -32,19 +32,22 @@ import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
  
         constructor(address _vault) {
             vaultAddress = _vault;
-            vault = C10Vault(_vault);
-            Proportion[0] = 50;
-            Proportion[1] = 50;
-            priceFeeds = new AggregatorV3Interface[](2);
-            priceFeeds[0] = AggregatorV3Interface(0xAB594600376Ec9fD91F8e885dADF0CE036862dE0); //MATIC/USD price feed
+            vaultcontract = VaultContract(_vault);
+            Proportion[0] = 33;
+            Proportion[1] = 33;
+            Proportion[2] = 33;
+            priceFeeds = new AggregatorV3Interface[](3);
+            priceFeeds[0] = AggregatorV3Interface(0x72484B12719E23115761D5DA1646945632979bB6); //AAVE/USD price feed
             priceFeeds[1] = AggregatorV3Interface(0xdf0Fb4e4F928d2dCB76f438575fDD8682386e13C); //UNI/USD price feed
-            tokenAddresses[0] = 0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270;//WPOL
+            priceFeeds[2] = AggregatorV3Interface(0xd9FFdb71EbE7496cC440152d43986Aae0AB76665); //LINK/USD price feed
+            tokenAddresses[0] = 0xD6DF932A45C0f255f85145f286eA0b292B21C90B;//AAVE
             tokenAddresses[1] = 0xb33EaAd8d922B1083446DC23f610c2567fB5180f;//UNI
+            tokenAddresses[2] = 0x53E0bca35eC356BD5ddDFebbD1Fc0fD03FaBad39;//LINK
         }
 
         function setVaultAddress(address _vault) public {
             vaultAddress = _vault;
-            vault = C10Vault(_vault);
+            vaultcontract = VaultContract(_vault);
         }
 
         function getPriceFeedsLength() public view returns (uint256) {

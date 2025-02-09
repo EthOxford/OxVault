@@ -5,15 +5,15 @@ import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "@openzeppelin/contracts/token/ERC20/extensions/ERC20Burnable.sol";
 import "@openzeppelin/contracts/access/Ownable.sol"; 
 
-contract C10Token is ERC20, ERC20Burnable, Ownable {
+contract C3Token is ERC20, ERC20Burnable, Ownable {
     constructor() ERC20("C2index", "C2") Ownable(msg.sender) {}
 
-    function mint(uint256 amount) public  {
-        _mint(msg.sender, amount);
+    function mint(address client,uint256 amount) public  {
+        _mint(client, amount);
     }
 
-    function burnTokens(uint256 amount) public {
-        _burn(msg.sender, amount);
+    function burn(address client, uint256 amount) public {
+        _burn(client, amount);
     }
 
     function burnAllTokens() public onlyOwner {
@@ -21,14 +21,15 @@ contract C10Token is ERC20, ERC20Burnable, Ownable {
     }
 }
 
-contract C10Vault is C10Token {
+contract VaultContract is C3Token {
 
     address public C10Contract;
-    address[2] public tokens;
+    address[3] public tokens;
 
         constructor() {
-            tokens[0] = 0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270;//WPOL
+            tokens[0] = 0xD6DF932A45C0f255f85145f286eA0b292B21C90B;//AAVE
             tokens[1] = 0xb33EaAd8d922B1083446DC23f610c2567fB5180f;//UNI
+            tokens[2] = 0x53E0bca35eC356BD5ddDFebbD1Fc0fD03FaBad39;//LINK
         }
 
     function setC2ContractAsOwner(address _C10Contract) public {
