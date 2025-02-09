@@ -97,8 +97,12 @@ contract C3ETFContract {
             amount_left = contractBalance - amount_to_sell;//x * 1e18
             usdcToken.transfer(vault_address, amount_left);
             contractBalance = contractBalance - amount_left;
+            usdcToken.transfer(thirdPartyAddress,contractBalance);
         }
-        usdcToken.transfer(thirdPartyAddress,contractBalance);
+        else
+        {
+            usdcToken.transfer(thirdPartyAddress, amount_to_sell);
+        }
     }
 
     function sellETF_Final(uint256 c2_quantity) public 
