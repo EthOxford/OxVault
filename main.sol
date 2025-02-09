@@ -56,7 +56,7 @@ contract C3ETFContract {
     function ifswapworks(uint256 usdc) public {
         
         for (uint256 i = 0; i < 3; i++) {
-            swapcontract.buy_swap(33*usdc /100, i);
+            swapcontract.buy_swap(3333*usdc /10000, i);
         }
     }
 
@@ -84,7 +84,7 @@ contract C3ETFContract {
         require(usdcToken.transferFrom(msg.sender, swapAddress, usdcAmount), "USDC transfer failed");
         for (uint256 i = 0; i < 3; i++)//rajouter require ici
         {
-            swapcontract.buy_swap(33*usdcAmount /100, i);
+            swapcontract.buy_swap(33333*usdcAmount /100000, i);
         }
         AUM_In_Usd = swapcontract.updatePoolValue();//becomes 1e 
         vaultcontract.mint(msg.sender, c2_quantity * 1e18);//(x*1e20/x*1e2)/1e18
@@ -93,26 +93,26 @@ contract C3ETFContract {
     function withdrawFromContract(address thirdPartyAddress,address vault_address, uint256 amount_to_sell) public {
         require(thirdPartyAddress != address(0), "Third-party address not set yet.");
         contractBalance = usdcToken.balanceOf(address(this));
-        if (contractBalance > amount_to_sell){
-            amount_left = contractBalance - amount_to_sell;//x * 1e18
-            usdcToken.transfer(vault_address, amount_left);
-            contractBalance = contractBalance - amount_left;
-        }
+        // if (contractBalance > amount_to_sell){
+        //     amount_left = contractBalance - amount_to_sell;//x * 1e18
+        //     usdcToken.transfer(vault_address, amount_left);
+        //     contractBalance = contractBalance - amount_left;
+        // }
         usdcToken.transfer(thirdPartyAddress,contractBalance);
     }
 
     function sellETF_Final(uint256 c2_quantity) public 
     {
         address recipient = msg.sender;
-        C10_Price = get_price();//1000 at start ie 0.001 usdc
-        usdcAmount =  c2_quantity * C10_Price;//0.001usdc ie 1000
+        C10_Price = get_price();
+        usdcAmount =  c2_quantity * C10_Price;
         for (uint256 i = 0; i < 3; i++) 
         {
-            amountOfTokenToWithdraw = ((33 * usdcAmount) /100 * 1e20) / swapcontract.assetPrices(i);//10**11
+            amountOfTokenToWithdraw = ((3333 * usdcAmount) /100 * 1e18) / swapcontract.assetPrices(i);//10**11
             vaultcontract.withdraw(swapAddress, swapcontract.tokenAddresses(i), amountOfTokenToWithdraw);//je withdraw du vault vers ce contrat
             swapcontract.sell_swap(address(this),amountOfTokenToWithdraw, i);//je swap les assets sur ce contract et je les envoie a mtc
         }
-        withdrawFromContract(recipient, vaultAddress, usdcAmount);//mtc.withdraw1 si tu veux onlyowner
+        withdrawFromContract(recipient, vaultAddress, usdcAmount);
         AUM_In_Usd = swapcontract.updatePoolValue();
         vaultcontract.burn(msg.sender, c2_quantity * 1e18);
     }
